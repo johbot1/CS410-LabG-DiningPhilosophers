@@ -1,9 +1,14 @@
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Represents a Philosopher in the Dining Philosophers problem.
+ * Each Philosopher is a Runnable that alternates between thinking and eating,
+ * and uses two Chopsticks (shared resources) with lock-based synchronization.
+ */
 public class Philosopher implements Runnable {
 
-    private final int id;
+    private final int id; // Unique ID
     private final Chopstick leftChopstick;
     private final Chopstick rightChopstick;
     private final Random random;
@@ -13,10 +18,12 @@ public class Philosopher implements Runnable {
     // Useful for status checks.
     private volatile boolean isFull = false;
 
-    // State enum for better logging (mainly for logs)
     private enum State { THINKING, HUNGRY, EATING };
     private volatile State state = State.THINKING;
 
+    /**
+     * Constructs a Philosopher with specified ID and chopsticks.
+     */
     public Philosopher(int id, Chopstick leftChopstick, Chopstick rightChopstick) {
         this.id = id;
         this.leftChopstick = leftChopstick;
@@ -24,6 +31,10 @@ public class Philosopher implements Runnable {
         this.random = new Random();
     }
 
+    /**
+     * The main execution logic for the philosopher thread.
+     * Simulates alternating between thinking and eating until the philosopher is full.
+     */
     @Override
     public void run() {
         try {
@@ -40,6 +51,9 @@ public class Philosopher implements Runnable {
         }
     }
 
+    /**
+     * Simulates the philosopher thinking for a random amount of time.
+     */
     private void think() throws InterruptedException {
         state = State.THINKING;
         System.out.println(this + " is thinking.");
@@ -49,8 +63,11 @@ public class Philosopher implements Runnable {
         System.out.println(this + " is hungry.");
     }
 
+    /**
+     * Simulates the philosophers attempts to pick up both chopsticks
+     */
     private void pickUpChopsticks() throws InterruptedException {
-        // Deadlock prevention: philosopher-4 picks up right first
+        // Pick up chopstick on the RIGHT FIRST
         if (id == 4) {
             rightChopstick.pickUp(this, "right");
             leftChopstick.pickUp(this, "left");
@@ -60,13 +77,15 @@ public class Philosopher implements Runnable {
         }
     }
 
-
+    /**
+     * Simulates eating. Increments the eat count and sets isFull if done.
+     */
     private void eat() throws InterruptedException {
         int currentMeal = eatCount.incrementAndGet();
         state = State.EATING;
         System.out.println(this + " is eating. Meal #" + currentMeal);
-        // Simulate eating time
-        Thread.sleep(random.nextInt(1000) + 500); // Sleep 0.5 to 1.5 seconds
+        // Simulate eating time (Between 0.5 to 1.5 seconds)
+        Thread.sleep(random.nextInt(1000) + 500);
 
         // Probably need to set a condition to stop running eventually
         if (eatCount.get() >= 5) {
@@ -74,26 +93,32 @@ public class Philosopher implements Runnable {
         }
     }
 
+    /**
+     * Releases both chopsticks
+     */
     private void putDownChopsticks() {
-        // Must release locks in the reverse order of acquisition *if* using nested locking
-        // within a single method, but here they were acquired sequentially.
-        // Crucially, always release both locks. Using try...finally in run() is essential.
 
-        // Release order doesn't strictly matter here as they are independent locks,
-        // but consistency is good. Let's release right then left.
         rightChopstick.putDown(this, "right");
         leftChopstick.putDown(this, "left");
     }
 
-
+    /**
+     * Returns whether the philosopher is done eating.
+     */
     public boolean isFull() {
         return isFull;
     }
 
+    /**
+     * Returns the number of times this philosopher has eaten.
+     */
     public int getEatCount() {
         return eatCount.get();
     }
 
+    /**
+     * Custom string representation for logging.
+     */
     @Override
     public String toString() {
         return "Philosopher-" + id;

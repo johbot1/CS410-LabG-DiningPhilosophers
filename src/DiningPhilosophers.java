@@ -2,7 +2,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * DiningPhilosophers.java
+ * <br><br>
+ * Main class that initializes and runs the Dining Philosophers simulation.
+ * It sets up five philosophers, five chopsticks, and uses a fixed thread pool
+ * to simulate concurrent dining behavior with deadlock prevention.
+ */
 public class DiningPhilosophers{
+    /**
+     * Entry point for the program.
+     */
     public static void main(String[] args) throws InterruptedException {
         int numPhilosophers = 5;
         Philosopher[] philosophers = new Philosopher[numPhilosophers];
@@ -13,7 +23,7 @@ public class DiningPhilosophers{
             chopsticks[i] = new Chopstick(i);
         }
 
-        // Maybe wrap this in a Try/Catch? It is angry at me for not doing that but seems to run fine
+        // Create a thread pool with 5 threads (one for each philosopher)
         ExecutorService executorService = Executors.newFixedThreadPool(numPhilosophers);
 
         System.out.println("Dining Philosophers Simulation Started...");
@@ -22,7 +32,7 @@ public class DiningPhilosophers{
         // Creates Philosophers and start their threads
         for (int i = 0; i < numPhilosophers; i++) {
             Chopstick leftChopstick = chopsticks[i];
-            // The mod (%) handles wrap-around
+            // The mod (%) handles the wrap-around the table
             Chopstick rightChopstick = chopsticks[(i + 1) % numPhilosophers];
 
             if (i == numPhilosophers - 1) {
@@ -37,6 +47,7 @@ public class DiningPhilosophers{
             executorService.execute(philosophers[i]);
         }
 
+        // Monitor loop: wait until all philosophers are full
         boolean allFull;
         do {
             allFull = true;
