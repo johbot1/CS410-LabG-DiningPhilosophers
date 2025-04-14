@@ -1,7 +1,4 @@
-package src;
-
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Chopstick {
 
@@ -17,6 +14,7 @@ public class Chopstick {
     // Attempt to pick up the chopstick (otherwise blocks until available)
     public boolean pickUp(Philosopher philosopher, String side) throws InterruptedException {
 
+        return false;
     }
 
     // Put down the chopstick
