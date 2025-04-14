@@ -25,15 +25,35 @@ public class Philosopher implements Runnable {
 
     @Override
     public void run() {
-
+        try{
+            while(!isFull) {
+                think();
+                pickUpChopsticks();
+                eat();
+                putDownChopsticks();
+            }
+            System.out.println(this + " is full");
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println(this + "was interrupted");
+        }
     }
 
     private void think() throws InterruptedException {
+        state = State.THINKING;
+        System.out.println(id + " Says: I'm thinking...");
 
+        // Simulate the time spent thinking
+        Thread.sleep(random.nextInt(1000) + 500); // Sleep between half a second to a second
+        state = State.HUNGRY;
+        System.out.println(id + " Says: I'm hungry!");
     }
 
     private void pickUpChopsticks() throws InterruptedException {
-
+        //Pickup the left chopstick FIRST
+        leftChopstick.pickUp(this,"left");
+        //Then the right
+        rightChopstick.pickUp(this,"right");
     }
 
     private void eat() throws InterruptedException {
