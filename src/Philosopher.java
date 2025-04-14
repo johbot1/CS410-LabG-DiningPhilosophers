@@ -32,7 +32,7 @@ public class Philosopher implements Runnable {
                 eat();
                 putDownChopsticks();
             }
-            System.out.println(this + " is full");
+            System.out.println(this + " Says: I'm full.");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.out.println(this + "was interrupted");
@@ -57,10 +57,21 @@ public class Philosopher implements Runnable {
     }
 
     private void eat() throws InterruptedException {
+        state = State.EATING;
+        System.out.println(id + " Says: I'm eating. Om nom nom.");
+        // Simulate the time spent eating (between half a second to a second)
+        Thread.sleep(random.nextInt(1000) + 500);
 
+        // Big boy has had 5 meals, he is full
+        if (eatCount >= 5){
+            isFull = true;
+        }
     }
 
     private void putDownChopsticks() {
+        // Put down the right chopstick FIRST!
+        rightChopstick.putDown(this,"right");
+        leftChopstick.putDown(this,"left");
 
     }
 
